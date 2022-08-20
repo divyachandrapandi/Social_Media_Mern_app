@@ -1,0 +1,663 @@
+REACT 18 UPDATES: https://reactjs.org/blog/2022/03/08/react-18-upgrade-guide.html#updates-to-client-rendering-apis
+
+
+// ------------------------SOCIAL MEDIA APP -----> MERN ------------------------------//
+
+
+// ##################****************************************########################//
+
+//-----------------------------SET UP APP/SERVER---------------------------//
+1. CLIENT SIDE:
+        ~ CREATE CLIENT FOLDER 
+        ~ npx create-react-app ./
+        ~ npm install 
+                      axios  --api request
+                      moment  -- time date
+                      react-file-base64  -- for converting image
+                      redux  
+                      redux-thunk  --async action using redux
+        ~ Delete "src" folder 
+        ~ create "src" folder
+        ~ create "index.js" -->     CONNECTS 
+        ~ create "components" folder
+        ~ create "App.jsx"
+        ~ import React, ReactDOM, App.jsx
+        ~ render method from ReactDOM to render App component in root element in index.html 
+2. SERVER SIDE :
+        ~ CREATE SERVER FOLDER
+        ~ npm init -y
+        ~ npm install 
+                      body-parser -- post request 
+                      express 
+                      cors  --cross origin resource sharing
+                      mongoose 
+
+
+// ------------------------------------MONGODB ATLAS SETUP-----------------------------------//
+1. Goto "MONGODB Atlas" web page
+2. On "Build Database" is where we are going to create a cluster
+3. In mumbai server, cluster name are SETUP
+4. Create new Database User---> username passwod "Divya55" 
+5. Connect to new IP adddress and also to connect form anywhere
+6. Then goto "Database" and "connect to your application" using url and copy it to server side
+
+// ---------------------------------------MONGOOSE SETUP -------------------------------------//
+1. CONNECT IT WITH url
+2. ADD SOME EXTENSIONS LIKE useNewUrlParser, useUnifiedTopology, useFindAndModify
+3. useFindAndModify:
+ REFER : https://stackoverflow.com/questions/52572852/deprecationwarning-collection-findandmodify-is-deprecated-use-findoneandupdate
+
+4. useUnifiedTopology:
+ serverSelectionTimeoutMS - With useUnifiedTopology , the MongoDB driver will try to find a server
+ to send any given operation to, and keep retrying for serverSelectionTimeoutMS milliseconds.
+ If not set, the MongoDB driver defaults to using 30000 (30 seconds).
+
+5. useNewUrlParser:
+ The underlying MongoDB driver has deprecated their current connection string parser. 
+ Because this is a major change, they added the useNewUrlParser flag to allow users to fall back 
+ to the old parser if they find a bug in the new parser. 
+ You should set useNewUrlParser: true unless that prevents you from connecting.
+
+IMPORTTANT 6. useFindAndModify deprecated donot add that line
+
+//-----------------------------ROUTES SETUP-----------------------------------------------//
+
+1. Create a new folder "routes"
+2. create a file "post.js"
+3. import express Router method to create all routes inside that page
+4. import routes const inside index.js
+5. use that routes with prefix "/posts" ie means "localhost:5000/post/<postRoutes>"
+
+// ----------------------------CONTROLLERS--------------------------------------------//
+1. Instead of using logic, callback function inside routes in routes/post.js,
+2. Create a new folder "controllers" --> new file "post.js"
+3. create const for callback fucntion and
+4. import that function to "routes/post.js"
+
+//----------------------------MODELS-----------------------------------------------//
+1. For use of mongoose, "models" --> "postMessage.js"
+2. Create postSchema
+3. Create postMessage Model and export it
+
+//----------------------------STRUCTURING CONTROLLERS-----------------//
+1. import model from Model/post.js
+// GET POSTS FROM DB:
+2. Inside getPosts, find items in db to render on "/" page
+3. since finding item inside db is asynchronous process, use async/await method
+4. Use try and catch for error messages
+5. When response status - 200 - show db items
+                        - 404 - show error
+
+// CREATE POSTS:
+6. This is also sync function
+7. create new post await
+8. try the save method and catch the error
+9. when reposnse status - 201 - successful creation
+                        - 409 - (Conflict) 
+                It indicates that the request could not be processed because of 
+                        1. the requested resource is not in the expected   state, or 
+                        2. the result of processing the request would create a conflict within 
+                             the resource.
+
+
+// --------------CLIENT SIDE ---------------------------//
+1. INSTALL @materila-ui/core 
+2. Now we are going to create a nest of folder and files inside components
+                 
+                - Form 
+                   - Form.jsx
+                   - styles.js
+                - Posts 
+                   - Post 
+                      - Post.jsx
+                      - styles.js
+                   - Posts.jsx
+                   - styles.js 
+3. inside src folder
+                - images
+                   - image.png
+
+// ---------------------Mui element----------------------------//
+1. import {Container, Grid, Grow, Typography, AppBar}
+
+2. The container contains all other element
+
+3. To Create menu ---> AppBar
+
+4. Grow is animation with type "in"
+
+5. Grid as container and grid items with breakpoints per useUnifiedTopology
+      ~ one column - 12units
+      ~ xs = {12} // small screen takes entire column
+      ~ sm = {7} {4} // small-medium screen takes 7 for onw item and 4 for other 
+
+6. import <Form/> <Posts/>
+
+// ----------------------STYLES custom theme----------------------//
+1. create styles.js seperately for each component folder
+
+2. It contains custom theme created using makeStyles method
+
+3. import that method to respective jsx files for styling component
+
+4. call useStyles using a variable
+
+// ----------------------AXIOS-----------------------------------------//
+1. in client--> create "api" folder ---> "index.js" file----> import axios
+
+2. setup url to homelevel "http://localhost:5000/posts/
+
+3 And export fetchpost method
+
+-----------------------REDUX---------------------------------//
+WHY REDUX :
+   Adding redux--> all action towards backend are going to be done using redux.
+   So we need to add boiler plate code though they have scalability in to long 
+    run by extending app without any trouble
+IMPORT IN src/index.js:
+
+import {Provider} from "react-redux";
+import {createStore, applyMiddleware, compose} from "redux";
+import thunk from "redux-thunk";
+import reducers from "./reducers";
+
+1. Create "action" folder ===> create "posts.js"
+
+2. Create "reducers" folder ===> create "posts.js" & "index.js"
+
+PROVIDERS:
+// Provider going to keep track of the store which is that global state allows us to access the store
+// from anywhere inside the app not neccessary to be in parent or child component to access that state
+
+REDUCERS:
+// reducers is a function that accepts the state and action
+//  Then based on action type, perform a logic and return action or state that is changed by action
+// In reducers, state always be equal to something that why intialising with empty array
+
+3. Inside reducers-->posts.js:
+   ~ declare reducers function and export it to reducers/index.js
+4. Here the combined reducers post is assigned to posts from reducers/posts.js 
+
+5. Now import reducers in src/index.js
+
+6. Create a store in index.js and apply middleware anf thunk
+
+7. Wrap App component with <Provider> and pass {store} as attribute
+
+
+SUCCESSFULLY APPLIED REDUX
+
+// -------------------TO USE REDUX--------------------------//
+1. IMPORT  useDispatch HOOK from react-redux in app.jsx
+
+2. It is imported to dispatch an action
+
+3. The useEffect hooks are "at first going to be the component that mount
+   but later it become component that updated"
+
+4. Inside useHooks, we are using dispatch method on getPosts() function imported from action/posts.js
+    
+5. goto action/post.js
+
+6. create getposts as ACTION CREATORS
+
+///action creator - function that creates action
+// Action an object that has type and payload
+// payload is data where we store all posts
+// With react-thunk we deal with async function, we use dispatch function as params
+// since it takes some time to fetch posts IT IS ASYNCHRONOUS FUNCTION hence use thunk (async func)
+7. IMPORT api from "api/index.js" {the response from axios get method}
+
+8. Now export action creator
+
+9. In reducers/post.js--->    case 'FETCH_ALL':
+                                  return action.payload;  //actual posts
+         we are returning the payload data from action/post.js
+
+// ----------------RETRIEVE THE POSTS-------------------------------//
+
+1. Goto component/Pots/posts.jsx
+
+2. import useSelector HOOK from react-redux to retireve data from global redux store
+
+3. Below, posts is from reducer/index.js (combinedReducers)
+    const posts = useSelector((state) => state.posts); 
+
+4. try to run npm start in both extending
+
+Check for network errors
+
+// --------------------FORM ---------------------------------------------//
+1. goto Form/form.jsx
+
+2. Create a useState hooks for postData with empty string object
+
+3. Use material ui5 element to style and use classes from styles.jsx 
+
+4. Create onClick, hnadleSubmit function
+
+IMPORTANT !!!!!!!!!!!
+5. On Onchange function in each TextField component, you get a entry that appened along 
+      with previous value in postdata as state
+
+// -----------------------CREATE POST----------------------------------------//
+1. GOTO api/index.js
+2. Create a new post method requesting to create a new post as data in createPost function
+3. goto action/posts.js
+4. create a Action creator for new posts and dispatch the action with data
+5. goto Form component--> form.jsx
+6. import useDispatch hook to use dispatch from the action/post.js
+7. Inside it call createPost method on state value
+8. DONT forget  to import createPost method from action/post.js
+
+// -----------------------GET POSTS---------------------------------------------//
+1. Using useSelector Hook, state value of posts are retreived from reducers
+
+2. Now using map method over posts, We render individual post on posts.jsx
+
+3. Then goto post.jsx to render that individual component
+
+4. Inside post.jsx, structure and styling the post as card component
+
+5. moment is installed and imported
+
+IMPORTANT 
+6. The createdAt is passed to moment and fromNow() method is called to show ---> "5mins ago", "2days ago"
+
+// ------------------------------UPDATE POST ----------------------------------------//
+1. In routes/post.js --> add routes to "/:id" ---> since we need id of the existing post, call updatedPost function from controller 
+
+2. Goto controllers/post.js ---> to create updatedPost function
+      ~ It is async function
+      ~ params as req,resource
+      ~ Extract id from req.params
+      ~ IMPORTANT Rename "id" as "_id"
+      ~ To check : if not valid mongoose id --> send message when 404 status raise 
+      ~ if valid then, updatePost using findByIdAndUpdate 
+      ~ Pass _id, {post updated from form.jsx}
+      ~ But where we are reciving this toUpdatePost --> req.body
+      ~ {new:true} -- toreceive updated version of post
+      ~ send the updatedPost as json in response
+   REMINDER : the "updatePost" method in clientside is different from "updatedPost" method in server side
+
+3. //------------------------to bring current ID -------------------------//
+   a. In post.jsx --> ON clicking the button with MoreHorizIcon ---> we get currentID
+   b. we are tracking the Id from App.jsx
+      // useState to set currentId with null 
+      // pass currentId to <form> component
+      // pass setCurrentId to <post> <form>
+   c. Goto Form.jsx, add setcurrentId & currentId as props 
+   d. Goto Posts.jsx & Post.jsx, add setcurrentId as props 
+   CONCEPT: STEP-1: WE NEED TO GET ID FROM MOREHORIZONICON BUTTON IN POST.JSX PASSING THAT VALUE TO
+            ITS PARENT COMPONENT CALLED <Posts> COMPONENT, THEN PASSING IT TO <App>
+            STEP-2: THIS ID IS SEND TO FORM.JSX TO GET CURRENTID FOR PERFORMING IF STATEMENT,
+            ie IF CURRENTID IS NOT NULL, DISPATCH UPDATEPOST FUNCTION WITH CURRENTPOSTDATA, CURRENTID
+            ELSE CREATE A NEW POST WITH CURRENTPOSTSDATA
+   e. Now to updatePost, import updatePost method from "action"
+            // declaring updatePost method in api/index.js
+            // pass id, updatedPost 
+            // id received from currentId and updatedPost recieved from postData passed inside Form.jsx
+            // axios url be declared to patch the updatedPost with currentID
+   f. goto action/post.js 
+            // create a updatePost function where we async the dispatch 
+            // REMINDER dispatch is a useDispatch Hook to dispatch an action  
+            // Make api request to update post also pass in id, post {currentId, postData from form.jsx}
+            // return updated response --> destructured as {data} object
+            // now dispatch action with property liek type, payload
+            //  here payload is updatedPost from api function
+   g. goto reducer/posts.js
+            // we get data as  array type inside action
+            // to implement update case, 
+            // if "UPDATE" then return array of updatedPost alone
+            // for which we use map method on data array
+   h. //----------------------------to autopopulate post in Form --------------------------------------//
+            // we are going to fetch post from redux 
+            // useSelector helps to retrieve state value of post 
+            // but we want only post to be updated from redux 
+            // so if currentId is not null, then  loop over state.posts and call "find" method on them
+            // Inside find method, if post has id equal to currentId
+            // now useeffect used to populate the form component
+            // accepts 2 param, call function ,dependency array
+            // when "toUpdatePost" value changes from null to something then activate useEffect method 
+            // inside it, if toUpdatePost exists, then setPostData to the toUpdatePost value
+            //  check the value attr of each element in form--> set to --> setPostData value
+
+   i. To make form Heading Dynamic
+            // if currentId exists, then we can make updatepost --> so "editing"
+            // else "creating" heading 
+   j. To clear the form after submitttin when "CLEAR" button clicked
+            // Inside clear function, setCurrentId to null, setPostData to empty string
+   k. To clear Form on submitting by calling clear() function inside handleSubmit()
+   l. // ---------------TO reload the page on submit ----------------------//
+            // change the useEffect in App.jsx 
+            // by altering the dependency array to include "currentId" along with dispatch 
+            // It means on submitting, clear() function enforced
+            // So the currentId state changes, hence when state od currentId changes
+            // then useEffect is triggered 
+
+            // goto controller 
+            // above post is a object { title, creator, tags, message, photos} but no ID --> too bad to 
+               send a post without ID, 
+            // therefore include post as {..post, _id} as destructured array objects
+
+
+//----------#########$$$$$$$$$$$$     axios vs router  $$$$$$$$$$$$$###########################-------//
+
+      Axios is a promise based http Client -- router is a method in Express in server side
+   It used to send a web request whereas express is used to listen ans serve these web requests
+
+                                       #########                                                  
+
+//---------------------------------------------TO DELETE POST --------------------------------------------//
+
+1. Goto Routes/post.js, --> add a route to delete a selected post
+
+2. Goto Controller/pst.js --> to create deletePost function
+         // It is async function and pass 2 parameter (req, res)
+         // Get id from req.params
+         // Check Id valid to id in mongoose
+         // await the findByIdAndRemove method on post with that id
+         // send success message as json
+3. Goto api/index.js
+         // create a axios function to delete request 
+         // deletePost is a function constant for axios 
+         // id is passed as params from frontend to know the id of post to be deleted
+4. Goto action/post.js
+         // action is created to delete a post
+         // It is function with async function inside with parama id 
+         // it passes dispatch as params
+         // perform api request to delete send to server 
+         // disaptch action with type "DELTE" and payload as "id"
+5. Goto reducers/post.json
+         // if DELETE is action type, then return posts other than deleted post 
+         // using filter and id not equal to payload id
+6. Goto Post.jsx
+         // import useDispatch Hook from redux and deletePost function from action
+         // In onClick function , call function to dispatch the deletePost  function with post._id as params
+
+
+//--------------------------------LIKE A POST--------------------------------------------//
+1. Goto router/post.js ---> Since we have likecount as a field in DB, we need to updating it, 
+               hence Patch method
+IMPORTANT : the url in route should be equal to url in axios
+2. Goto controller.js --> to create likePost 
+                     // where we update likecount by incrementing to one
+
+3. Goto api/index.js --> to create likePost request in axios 
+                  IMPORTANT: since "/:id" for patch already taken by updatePost
+                              we are "/:id/likePost" for like url
+4. Goto actions/post.js --> to create likedPost async function passing "id"
+                              // call api likePost function with "id"
+                              // get response and destructure it as {data}
+                              // Now disaptch the action type as "UPDATE", payload as data
+5. goto reducers.js // since update, like post does same job in reducer, we need no extra case for likePost
+
+6. goto post.jsx // import likedpost from action
+                 // onclick pass dispatch on likedPost
+
+// --------------------------tag -----------------------------------------//
+The tag in post.jsx need to render seperatedly with # for each tag,
+Hence ------> use split() metho on target.value 
+
+// --------------------------Like -----------------------------------------//
+The Like button need some space "&nbsp;"
+
+// ------------------------------deploy------------------------------------------//
+
+TO DEPLOY SERVER SIDE IN HEROKU ---> COPY THE URL AND PASTE IT IN API/INDEX.JS --> URL
+THEN WE CAN USE frontend CONNECTED TO SERVER WHICH IS DEPLOYED IN HEROKU LIVELY
+
+SERVER SIDE HEROKU : https://memories-social-media-reactapp.herokuapp.com/posts
+
+TO DEPLOY CLIENT SIDE IN NETLIFY --> NPM RUN BUILD--> COPY ENTIRE BUILD FOLDER --> DONE 
+
+CLIENTSIDE NETLIFY: https://memories-social-media-reactapp.netlify.app/
+
+
+//$$$$$$$$$$$-----------------------AUTHENTICATION----------------------------$$$$$$$$$$$$$$$$$//
+
+1. CLIENT SIDE INSTALLATION:
+      // npm install react-google-login jwt-decode @mui/icons-material
+
+2. SERVER SIDE INSTALLATION
+      // npm install bcryptjs jsonwebtoken
+
+3. NOW WE ARE CREATIMG SEPERATE COMPONENTS FOR HOME, NAVBAR, AUTH 
+
+4. WE installed react-router-dom 
+
+5. import BrowserRouter, Routes, Route from react-router
+
+6. Wrap entire app component insde BrowserRouter
+
+7. Set route like "/" , "/auth" inside Routes as path --> connect it to Home element and Auth element 
+
+/// --------------------CREATING FORM IN AUTH---------------------///
+1. Create Form according to state values 
+
+2. Check page auth.jsx, input.jsx for more
+
+// -------------------------GOOGLE OAUTH------------------------------///
+1. To import GoogleLogin  component from react-google-login ---> in auth jsx take a look
+
+2. Gotot console.developers.google.com/api --> to create client id
+
+      // create in oauth consent screen
+      // input app name, contact info --> save
+      // goto credentials --> new --> oAuth client --> appname --> uri in javascript origin ..> localhost:3000
+      // then redirect uri 3000, 3000/auth
+      // copy client id, secrets
+      // clientId --> 918968530454-jc3bkgume3oc27t6m7rj724tiak7up6f.apps.googleusercontent.com
+      // clientSecret --> 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
+
+3. Inside GoogleLogin pass on clientId
+
+4. Then create two function for google success afn faliure
+
+5. If its failure pass on error message
+
+6. if its success we need a function to catch the response after signingin
+
+7. Catch profile details, tokenid and add it as data inside action
+
+8. How? useDispatch to disaptch action type "auth" and data
+
+9. to handle this data, add reducers 
+
+/////$$$$$$$$$$$$$$$$##############@@@@@@  UPDATED GOOGLE OAUTH @@@@@@@@######################$$$$$$$$$$$$$$$$///
+
+1. INSTALL AND IMPORT @reacr-oauth/google
+
+2. Instal jwt-decode, Since google Identity services alllow only to signin but not to get user details
+   Hence to decode the details from response
+
+3. Goto console.cloud.google.com again to folloe the above process to get client id and secret
+      clientID =166521513486-qpblvpf4314deljtj49260hpuduu2350.apps.googleusercontent.com
+      clientsecret = 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
+
+4. goto auth.jsx
+      // import GoogleLogin componetn from @react-oAuth/google
+      // <GoogleLogin> containe --> onSuccess and onError
+      // for styling 
+               type="standard"
+               theme="filled_blue"
+               size="medium"
+               text="sigin_with"
+               logo_alignment="left"
+               width="100"
+      Now button is ready next, we need to create function for onSuccess --> to get response.credentials
+      // Now import jwt-decode, it helps to get user details and tokenid
+      // pass on response.dredentials as argument to jwt_decode function 
+      // When you console log it, SURPRISE you get user details
+      // now destructure the object to get usernname, id, image, email
+
+      // Also dispatch the action type as AUTH and send userdetails as data : {result, token}
+5. Next, create auth.js inside reducer
+      // import AUTH, LOGOUT from constants
+      // create authreducers with sate as authData null as initial value and action
+      // try switch statement to seperate classes
+      // For AUTH case, add the action.data to localStorage using stringify method
+          and return {..state, authData:action?.data}
+
+6. goto reducer/index.js
+      // include authreducers as auth
+
+7. goto Navbar.jsx, where we need to render user name, image
+      // create a state called user,setUser 
+      // The initial state for user as items in localStorage 
+      // In components, check for name as user.result.name
+         for example~ in user object, there is result object, in that name
+
+8. goto Auth.jsx after signing in, navigate the page from "/auth" to "/" and replace true
+
+9. Back to Navbar.jsx, we create useEffect method, why? since the page doesnot render user detail on Navbar
+                                                               we have to reload the page to change the user state
+   //solution: use useeffect method with location dependency
+   //Location is a useLocation hook which tracks the current route adddress
+   //since we migrated from auth page to home, there is alocation change so
+   //the useEffect method is triggered, to setuser to localstorage user 
+   //Hence rendered the user detail in Navbar
+10.-----------#######LOGOUT########------------
+         //GOTO Navbar.jsx, add onclick method to logout function
+         //Inside logout function ~ setUser to null
+         _________________________~ navigate the route to home
+         _________________________~ dispatch the actio type to "LOGOUT"
+         //goto reducer/auth.js ~ case for LOGOUT where we clear localStorage,
+         _________________________~ return state with authData null 
+
+// #### -----------------SUBMITTING MEMORIES SIGNIN/SIGNUP-----------------------######
+goto auth.jsx 
+1. when signin/sign up BUTTON is clicked , the form is submiited
+
+2. create handleSubmit function
+
+3. create a state for formData, initialState is empty object with firstName, lastName, other details as string ""
+
+4. Inside handleChange, setFormdata target name in array --> to target value
+
+5. Inside handleSubmit, dispatch a action function for signin and signup when button is {isSignup true or false}
+
+6. goto action--> create auth.js
+         //import constant types and api
+         // create action function for signin signup
+         //where we login signup the user sending info and getting info to backend
+
+7. //----------in backend----------------//
+
+8. goto index.js, add routes for "/user" and include userRoutes
+
+9. goto routes, where we create routes for sigin signup using post method,include controller functions
+
+10.goto controllers, where we create signin, signup for interaction with models 
+
+11. goto models, to create user schema and models
+
+12.go back to controller , 
+         // signin:
+            // It is async function, we are getting form data from frontend
+            // checking for exsiting user, password 
+            // get token using jwt, send user data with token back
+         // signup:
+            // It is async function, we are getting form data from frontend
+            // checking for exisiting user, 
+            // hashin the password 
+            // create new user with hashed password
+            // get token using jwt, send user data with token back
+
+///-------------------------middle ware --------------------------------------------///
+1. goto middlweare, create auth.js --> import jwt 
+
+2. Create a auth function which is async (req,res, next)
+ 
+3. the req.body is going to  get token
+
+4. there are two types of request body we get here --> from our own auth, google auth
+
+5. Generally, our auth token length is less than 500 
+
+6. Verify the token with secret we used in controller/user..js
+
+
+7. we have to assign that verified decoded data's id to req.userdetails
+
+8. same to google auth without secret string 
+
+9. important: add next();
+
+Means: request to like post --> middleware --> next() permission granted --> controller for like logic ---> db
+
+10. goto routes/post , add auth in routes and import the auth from middleware
+
+#######// ---------------LIKE POST-----------------------//###############
+
+1. GOTOT CONTROLLER, changing the prev version
+
+2. check for user using req.userid 
+
+3. find post by id
+
+4. Inside post, there is an field called "likes" => [String]
+
+5. to like/ dislike a post
+
+6. check for index value of likes
+
+7. if -1 then like the post by pushing its id
+
+8. if not -1, then filter the id which is not eqaul to is
+   that means no such userid inside likes array hence zero filter
+   assigned to post.likes
+   SMART MOVE
+
+9.update the post and send json likedpost
+
+/// -------frontend-----------------//
+
+1. goto api/index.js ---> create a new axios baseURl
+               // API.get("/posts")
+               // signin, signup --> send formData as parameter
+               // its  post method API.post("users/signup", formData)
+2. goto action/auth.js --> create signin and signup function
+               // pass parameter --> formData, nabigate
+               // destructure the data using calling signIn(formData)
+               // dispatch the action type as "AUTH", data
+               // navigate to home
+
+   action --> api ---> middleware --> routes
+
+// ----------backend--------------------//
+
+1. goto controllers/post.js, update previous version createPost
+
+2. add creator: req.userId, createdAt: new Date().toISOString
+
+3. goto models, to add name : String
+
+// ---------------INTERCEPTORS IN AXIOS ----------------------//
+
+We need Interceptors function for every request send to api method thent to middleware to backend
+
+It send token as Bearer token
+
+// ------------------LIKES BUTTON -------------//
+CREATE <Likes> cmponent to be visible with number of people liekd dependig on userId, googleId
+Disabled for people not logged in 
+
+// -------------update/ delete button-------------//
+if userid, googleid are equal to post.creator then visible to people to edit/delete
+
+// -----------TOKEN EXPIRATION ------------------------------//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
