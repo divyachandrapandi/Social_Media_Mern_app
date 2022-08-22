@@ -6,6 +6,7 @@ import {
   CardMedia,
   Button,
   Typography,
+  ButtonBase
 } from "@material-ui/core";
 import ThumbUpAltIcon from "@material-ui/icons/ThumbUpAlt";
 import ThumbUpAltOutlined from "@material-ui/icons/ThumbUpAltOutlined";
@@ -13,15 +14,25 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import moment from "moment";
 import useStyles from "./styles";
-
+import {useNavigate} from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { deletePost, likedPost } from "../../../action/post";
 
 function Post({ post, setCurrentId }) {
   const classes = useStyles();
   const dispatch = useDispatch(); // to dispatch actions from redux
-  console.log("post in post.jsx", post);
+  const navigate =useNavigate();
+
   const user = JSON.parse(localStorage.getItem('Profile'));
+
+  const openPost = () => {
+    navigate(`/posts/${post._id}`)
+  }
+
+  const handleEdit = (e) => {
+    setCurrentId(post._id);
+    e.stopPropagation();
+  }
 // ------------------------LIKES COMPONENT WITH LOGIC ----------------------------------------//
   const Likes = () => {
     if (post.likes.length > 0) {
@@ -38,7 +49,9 @@ function Post({ post, setCurrentId }) {
 
 
   return (
-    <Card className={classes.card}>
+    <Card className={classes.card} raised elevation={6}>
+    <ButtonBase className={classes.cardAction} onClick={openPost}>
+
       <CardMedia
         className={classes.media}
         image={post.selectedFile}
@@ -55,7 +68,7 @@ function Post({ post, setCurrentId }) {
         <Button
           style={{ color: "white" }}
           size="small"
-          onClick={() => setCurrentId(post._id)}
+          onClick={handleEdit}
         >
           <MoreHorizIcon fontSize="default" />
         </Button>
@@ -80,6 +93,7 @@ function Post({ post, setCurrentId }) {
           {post.message}
         </Typography>
       </CardContent>
+    </ButtonBase>
       <CardActions className={classes.cardActions}>
         
         

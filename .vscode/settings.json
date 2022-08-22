@@ -1,0 +1,14 @@
+{
+    "cSpell.enableFiletypes": [
+        "!text"
+    ],
+    "cSpell.language": "en,en-GB",
+    "cSpell.customDictionaries": {
+        "custom-dictionary-workspace": {
+            "name": "custom-dictionary-workspace",
+            "path": "${workspaceFolder:Social_Media_Mern_app}/.cspell/custom-dictionary-workspace.txt",
+            "addWords": true,
+            "scope": "workspace"
+        }
+    }
+}

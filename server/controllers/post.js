@@ -1,17 +1,64 @@
 // LOGIC SIDE
 import express from "express";
 import mongoose from "mongoose";
-import postMessage from "../models/postMessage.js";
+import postMessage  from "../models/postMessage.js";
+
+const router = express.Router();
+
+// --------------GET POST --------------------------//
+
+export const getPost = async(req,res) => {
+  const {id} = req.params;
+  try {
+    const post = await postMessage.findById(id);
+    res.status(200).json(post)
+  } catch (error) {
+    res.status(404).json({message: error.message})
+  }
+}
 
 // --------------GET POSTS --------------------------//
 export const getPosts = async (req, res) => {
+  const {page}= req.query;
   try {
-    const postMessages = await postMessage.find();
-    res.status(200).json(postMessages);
+    const LIMIT = 6;
+    const startIndex= (Number(page) - 1) * LIMIT; // to get starting index
+    const total = await postMessage.countDocuments({})  // to know the total posts for finding the total page required
+
+
+    const posts = await postMessage.find().sort({_id: -1}).limit(LIMIT).skip(startIndex);
+    res.status(200).json(
+                          {data : posts, 
+                           currentPage: Number(page), 
+                           numberOfPages: Math.ceil(total/LIMIT)
+                          });
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
 };
+// --------------GET POSTS BY SEARCH--------------------------//
+// query vs params
+
+// QUERY = /posts?page=1 --> page=1
+// params = /posts/:id   ===> id =123
+
+
+export const getPostsBySearch = async (req,res) => {
+  // to get data from req.query
+  const {searchQuery, tags} = req.query;
+  
+  try {
+      const title = new RegExp(searchQuery, 'i') ; // i is flag to ignore case
+      // const tags = new RegExp(tags, 'i') ; // i is flag to ignore case
+      const post = await postMessage.find({ $or : [ {title}, {tags :{$in : tags.split(',')}}]});
+      res.json({ data : post })
+
+    } catch(error)
+    {
+    res.status(404).json({message: error.message})
+   }
+}
+
 
 // --------------CREATE A POST --------------------------//
 export const createPost = async (req, res) => {

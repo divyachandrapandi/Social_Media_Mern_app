@@ -648,16 +648,163 @@ if userid, googleid are equal to post.creator then visible to people to edit/del
 
 // -----------TOKEN EXPIRATION ------------------------------//
 
+// DEPENDS ON LOCATION USEeFFECT TRIGGERS TOC HECK TOKEN EXPIRATION //////
+  useEffect(() => {
+    const token = user?.token;
+    //TOKEN EXPIRATION//
+    if (token) {
+      const decoded = decode(token);
+      if (decoded.exp * 1000 < new Date().getTime()) logout();
+    }
+    // SET USER FROM LOCAL STORAGE
+    setUser(JSON.parse(localStorage.getItem("Profile")));
+  }, [location]);
+  // the useEffect depends on location, when route changes from "/auth" to "/" using navigate
+  //    after signing In. The login session last for an hour
 
 
+// ----@@@@@@@%%%%%%%%%% PART -4 PAGINATION AND SEARCH %%%%%%%%%%%%%%%%@@@@@@@@@@@@@@@@@@@------------//
+
+// INSTALLATION : 
+               @material-ui/lab
+               material-ui-chip-input
+
+1. create Pagination component, styles.js for styles
+2. <Pagination
+            classes ={ {ul : classes.ul}}
+            count = {5}  // NUMBER OF ITEM PER PAGE 
+            page={1}  // STARTING PAGE 
+            variant="outlined" 
+            color="primary" 
+            renderItem={(item) => (<PaginationItem {...item} component={Link} to={`/posts?page=${1}`}/>)}
+               // THIS RENDERING FUNCTION RENDERS ALL ITEM BY LOOPING 
+                THROUGH AS PAGINATE ITEM, THEN PROVIDE LINK FOR EACH PAGEES 
+
+        /> 
+3. Create Routes for paginated items
+      Use navigate with replace to for redirecting from "/" to "/posts" for <Home/> element
+      create route for posts/search --> for searching 
+      create route for posts/:id --> individual post 
+
+4. create PageDetails/PageDetail.jsx
+
+5. // ---for restricting /auth -----------//
+         ~ if user doesnot exists in localstorage, then we can see /auth 
+
+6. //---------------------QUERY PARAMS IN REACT ROUTER ----------------------//
+      Inside Home.jsx, create useQuery function as REACT HOOKS
+
+      // ----------------URLSearchParams is utility method to work with QueryString------------//
+
+      // Inside useQuery, we return a new URLSearchParams 
+      // the string to pass inside URLSearchParams is from using useLocation.search 
+      // we can use useQuery to get the value of key ('page') based in url as query
+      // ------------
+                   const page =query.get('page')  ---> ex 1
+                   const searchQuery = query.get('searchQuery') ---> ex newyork
+
+7. goto home.jsx, create appbar for search bar 
+
+8. create state value for search and adding attr onkeydown for submitting on pressing enter 
+
+9. create ChipInput search bar to search tags and create function for onDelete and onAdd
+
+10. searchPost were created to search correct query result to be returned 
+         ~ trim method is used to remove white spaces 
+         ~ to dispatch action on searching
+
+11. goto action.post.js 
+         ~ create getPostBySearch function that uses redux-thunk to pass dispatch as params for async function
+         ~ then call api fetchpostsbysearch for data
+         ~ pass searchQuery as params to this both function
+
+12 .goto api/index 
+         ~ create route for search with searchQuery as path parameters after ? mark
+         ~ also add tags as path params
+  API.get(`/posts/search?searchQuery=${searchQuery.search || 'none'}&tags=${searchQuery.tags}`)
 
 
+13. go back to home.jsx, in searchPost function
+         ~ dispatch the function getPostbysearch function from action so import it first
+         ~ pass on search, tags as argument
+         ~ here tags are arry which can be used as path parameter
+         ~ hence to convert array into string use join 
 
+14. goto server/ routes
+         ~ add in the routes to get "/search" search query 
+15. goto controllers
+         ~ create getPostBySearch function with req, res
+         ~ receive the data send from frontend dispatch 
+         ~ to find data from database
+         //  to find either title / or tags using find method 
+         //  since tags are passed to backend as string we have to use split method to turn it back to array
+         //  return to front end as json 
+16. goto action 
+         ~ check if we are correct on receiving the data
+         ~ we get the answer
+17. goto home.jsx
+         ~ navigate the page to ... `/posts/search?searchQuery=${search || "none"}&tags=${tags.join(',')}` ...
+         ~ we get search and tags when both submitted in form
+18. goto action.jsx
+         ~ dispatch FETCH_BY_SEARCH action to reducers with data as  payload
+19. goto reducer/post
+         ~ if FETCH_BY_SEARCH then return action .payload to reducer/index.js
+20. goes to reducer/index.jsx
+         ~ the post in that file, is the post received from reducer/post
+21. goes to posts.jsx using useSelector to get post from reducer to render thw page using post component in Home page
 
+//-----------------PAGINATION----------------//
+1. we used useEffect method n home.jsx to disaptch getPost method
+2. since we using pagination, we no need that hook
+3. Earlier we pulled query parameter from path using useQuery and URLSearchParams
+4. Wa are passing the page from query as props to pagination component
+5. Goto Pagination.jsx,
+         ~ create useEffect that takes page as params as well as dependencies
+         ~ here dispatch the getposts along with page as params to action.jsx
+6. goto action.jsx, 
+         ~ pass page as params to api
+7. goto api
+         ~ pass page as query params in fetch post url path
+8. goto controllers
+         ~ receive the page from req.query
+         ~ since rendering posts on page using pagination require three data
+         ~ 1.limit, 2. total page, 3.startindex
+         ~ unlike first two, startindex little trickier
+         ~ since the index of the data are from 0, subtract one from page
 
+                  page =2 limit =8 total =40 --> startindex = (page -1)*limit = 8
+         ~ using skip, limit, sort we are getting required data for all pages
+         ~ return current page, noOfPage, data as data object
+9. goto action, received by the getPosts method send to reducer
+10.goto reducer/post.js
+         ~ change posts to state
+         ~ for fetch all we get three data inside payload hence mention them in reducer
+11. back pagination.jsx,
+         ~ using use selector we get numberofpages , we can get it passed to pagination component 
 
-
-
-
-
+// -----------------------loading -------------------------//
+1. set new constant for START_LOADING, END_LOADING
+2. import it to action and reducer 
+3. goto action:
+         ~ where disaptch START_LOADING action before fetching all data, fetching by search, creating
+         ~ dispatch END_LOADING action after these action dispatched
+4. goto reducer:
+         ~ to give logic for this action
+         ~ when START_LOADING, return state along with isLoading true
+         ~ when END_LOADING, return state along with isLoading false
+         ` before all this, in initial state object --> add isLoading as true, posts as empty array
+   ~ since state is no more a array but object hence other action definition also changes
+  
+// --------------individual posts-----------------------------------//
+1. add button base link to posts card
+2. goto postDetails.jsx, 
+         // get post, posts, isLoading from useSelector redux store
+         // get id from params ---> using useParams()
+3. goto post.jsx
+         // add some styles
+         // add ButtonBase to make the card clickable
+         // on click add function to navigate individual post route
+4. goto postDetails.jsx, 
+         // if no post available return null
+         // if isLoading true then circularprogress component in a paper
 
